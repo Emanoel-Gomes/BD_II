@@ -1,0 +1,13 @@
+# testes m2
+python3 atividade_1/teste_acerto.py -v
+python3 atividade_2/teste_expulsao.py -v
+python3 atividade_3/teste_suja.py -v
+
+# demonstrações
+python3 atividade_1/medicao.py
+python3 atividade_2/comparacao.py
+python3 atividade_3/morte.py
+python3 atividade_3/integracao.py
+
+# exercício de hoje
+python3 exercicio_29_09.py
