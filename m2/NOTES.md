@@ -2,8 +2,7 @@
 
 Entrega do M2: um cache de páginas entre o resto do minidb e o arquivo do M1,
 com `fixa`/`solta`, LRU, contadores de acerto e falta, bit de sujeira e
-gravação na expulsão. Cada atividade tem o seu `NOTES.md` com os números;
-este arquivo tem as decisões e as respostas ao tema.
+gravação na expulsão.
 
 | atividade | tema | teste do slide "Como saber que está certo" |
 |---|---|---|
