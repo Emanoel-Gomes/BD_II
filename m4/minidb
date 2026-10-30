@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""
+minidb - o programa do M4: lê SQL da entrada padrão, uma instrução por linha,
+e responde na saída padrão.
+
+    $ ./minidb dados.db
+    CREATE TABLE aluno (id INT, matricula INT, nome CHAR(20));
+    OK
+    INSERT INTO aluno VALUES (1, 20260001, 'Ana');
+    OK 1
+    ^D
+    $ ./minidb dados.db          # outro processo: o catálogo veio do disco
+    SELECT * FROM aluno;
+    1|20260001|Ana
+    (1 linha)
+
+Com um terminal na entrada aparece o prompt `minidb> `; com pipe ou
+redirecionamento (./minidb dados.db < comandos.sql) não aparece nada além
+das respostas. Se o arquivo não existe, é criado.
+"""
+
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+
+from cache import CachePaginas          # noqa: E402  M2
+from catalogo import Catalogo           # noqa: E402  M4
+from executor import executa            # noqa: E402  M4
+from minidb import MAGICO, inicializa_pagina0   # noqa: E402  M1
+
+
+def abre(caminho):
+    """Devolve (arquivo, cache, catálogo). Confere o número mágico com um
+    open comum ANTES de usar le_pagina: o M1 completa com zeros uma leitura
+    além do fim, e isso alteraria um arquivo que não é nosso."""
+    novo = not os.path.exists(caminho) or os.path.getsize(caminho) == 0
+    if not novo:
+        with open(caminho, "rb") as g:
+            if g.read(len(MAGICO)) != MAGICO:
+                raise SystemExit(f"minidb: {caminho} não é um arquivo do minidb (não foi alterado)")
+    f = open(caminho, "w+b" if novo else "r+b")
+    try:
+        if novo:
+            inicializa_pagina0(f)
+        cache = CachePaginas(f)
+        return f, cache, Catalogo(cache)
+    except BaseException:
+        f.close()
+        raise
+
+
+def main(argv):
+    if len(argv) != 2 or argv[1] in ("-h", "--help"):
+        print(__doc__)
+        return 0 if len(argv) == 2 else 2
+    for fluxo in (sys.stdin, sys.stdout):
+        fluxo.reconfigure(encoding="utf-8")
+    try:
+        f, cache, catalogo = abre(argv[1])
+    except (OSError, ValueError) as e:
+        print(f"minidb: {argv[1]}: {e}", file=sys.stderr)
+        return 1
+    interativo = sys.stdin.isatty()
+    try:
+        while True:
+            if interativo:
+                print("minidb> ", end="", flush=True)
+            linha = sys.stdin.readline()
+            if not linha:
+                break
+            if linha.strip():
+                print(executa(linha, catalogo, cache), flush=True)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        cache.grava_tudo()                      # M2: páginas sujas vão para o disco
+        f.close()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

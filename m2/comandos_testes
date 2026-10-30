@@ -1,4 +1,4 @@
-# testes
+# testes m2
 python3 atividade_1/teste_acerto.py -v
 python3 atividade_2/teste_expulsao.py -v
 python3 atividade_3/teste_suja.py -v
