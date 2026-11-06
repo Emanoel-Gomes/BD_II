@@ -59,8 +59,7 @@ make clean         # apaga __pycache__ e arquivos .db gerados
 ### O minidb no terminal (M4)
 
 ```bash
-cd m4
-./minidb dados.db
+./minidb dados.db          # na raiz do repositório
 CREATE TABLE aluno (id INT, matricula INT, nome CHAR(20));
 OK
 INSERT INTO aluno VALUES (1, 20260001, 'Ana');
@@ -91,25 +90,36 @@ Mais comandos em [`m2/comandos_testes`](m2/comandos_testes) e [`m3/comandos_test
 ```text
 .
 ├── README.md
-├── Makefile
+├── Makefile                 # make test | make clean
 ├── .gitignore
-├── m1/                      # página e arquivo de dados
-│   ├── atividade_1/  atividade_2/  atividade_3/   # cada uma com NOTES.md
-├── m2/                      # cache de páginas
-│   ├── NOTES.md  cache.py  minidb_cache.py  apoio.py
-│   └── atividade_1/  atividade_2/  atividade_3/   # testes + medições
-├── m3/                      # árvore B+
-│   ├── NOTES.md  btree.py  minidb_indice.py  indice.py  teste_btree.py  ...
-├── m4/                      # parser, catálogo e executor
-│   ├── NOTES.md  sql.py  catalogo.py  executor.py  erros.py  minidb  teste_sql.py  ...
-└── m5/ ...                  # próximos módulos (o minidb final junta M2 + M3 + M4)
+├── minidb                   # o programa (CLI do M4): ./minidb dados.db
+│
+├── src/                     # o código do minidb, UMA cópia só
+│   ├── minidb_m1.py         # M1  leitura/escrita de páginas
+│   ├── minidb.py            # M1  cabeçalho, esquema, inserção, varredura
+│   ├── cache.py             # M2  cache de páginas
+│   ├── minidb_cache.py      # M2  o M1 passando pelo cache
+│   ├── btree.py             # M3  árvore B+
+│   ├── minidb_indice.py     # M3  índice ligado à tabela
+│   ├── erros.py  sql.py     # M4  erros, tokenizador e parser
+│   ├── catalogo.py          # M4  catálogo em disco
+│   ├── executor.py          # M4  análise semântica e execução
+│   └── apoio.py             # utilidades de teste
+│
+├── m1/  m2/  m3/  m4/       # um módulo por pasta: NOTES.md, testes, demos e medições
+│   ├── NOTES.md             # decisões e números do módulo
+│   └── atividade_N/ ...     # M1 e M2 têm uma subpasta por atividade
+│
+└── m5/ ...                  # próximos módulos: acrescentam arquivos em src/
 ```
 
-Cada pasta `mN/` é um retrato autocontido do módulo: traz a cópia do código que herda dos anteriores,
-para rodar sozinha. O `NOTES.md` do módulo registra o que mudou em relação ao anterior.
+Os módulos **evoluem o mesmo código**: o que o M3 acrescenta (`btree.py`) ou o M4 (`sql.py`...) entra em `src/`,
+e cada `mN/` guarda os testes e as notas que provam aquele módulo. Os retratos de cada entrega estão nas
+**tags** do git (`m1`, `m2`, `m3-m4`), com o código como ele era na época.
 
 ## Convenções
 
+- Código compartilhado só em `src/`; nada de copiar arquivo entre pastas de módulo.
 - Um `NOTES.md` por módulo (e por atividade, em M1 e M2) com decisões, números e o que o teste **não** prova.
 - Testes com `unittest`, usando cache de 3 frames para forçar a expulsão.
 - Arquivos `.db` e `__pycache__` não são versionados; os testes e demos recriam o que precisam.

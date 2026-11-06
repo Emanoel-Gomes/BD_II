@@ -18,7 +18,7 @@ import sys
 import tempfile
 import unittest
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
 from apoio import ArquivoQueFalha, cria_arquivo_de_paginas  # noqa: E402
 from cache import CachePaginas  # noqa: E402
 from minidb import ESQUEMA_ALUNO, inicializa_pagina0, le_metadados, varredura  # noqa: E402

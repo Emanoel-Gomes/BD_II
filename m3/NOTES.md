@@ -1,5 +1,11 @@
 # NOTES.md — M3: árvore B+
 
+> **Layout do repositório (atualizado).** O código que os módulos compartilham mora em
+> [`../src/`](../src) (uma única cópia: `minidb_m1.py`, `minidb.py`, `cache.py`, `minidb_cache.py`, `apoio.py`,
+> `btree.py`, `minidb_indice.py`, `sql.py`, `catalogo.py`, `executor.py`, `erros.py`). Esta pasta guarda só o que é
+> deste módulo: testes, demos e notas. Onde o texto abaixo diz "esta pasta" para um desses arquivos, leia `src/`.
+> O retrato original, com as cópias por pasta, está nas tags `m1`, `m2` e `m3-m4` do git.
+
 Entrega do M3: um índice B+ sobre o cache do M2, que leva de um `id` ao RID
 `(página, slot)` do M1. Achar um registro desce a árvore e lê **uma** página
 da tabela, sem varrê-la. Busca por chave, busca por faixa e inserção com

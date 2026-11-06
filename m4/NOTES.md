@@ -1,5 +1,12 @@
 # NOTES.md — M4: do texto à árvore, e a primeira consulta que roda
 
+> **Layout do repositório (atualizado).** O código que os módulos compartilham mora em
+> [`../src/`](../src) (uma única cópia: `minidb_m1.py`, `minidb.py`, `cache.py`, `minidb_cache.py`, `apoio.py`,
+> `btree.py`, `minidb_indice.py`, `sql.py`, `catalogo.py`, `executor.py`, `erros.py`). Esta pasta guarda só o que é
+> deste módulo: testes, demos e notas. Onde o texto abaixo diz "esta pasta" para um desses arquivos, leia `src/`.
+> O programa `minidb` fica na raiz do repositório (`./minidb dados.db`), e a árvore B+ (`btree.py`) já está em `src/`, ainda sem uso no M4.
+> O retrato original, com as cópias por pasta, está nas tags `m1`, `m2` e `m3-m4` do git.
+
 Entrega do M4: o minidb deixa de ser uma biblioteca e passa a ser um programa.
 Recebe SQL pela entrada padrão, uma instrução por linha, responde, e guarda
 tudo no arquivo. A meta do slide roda palavra por palavra, **em dois

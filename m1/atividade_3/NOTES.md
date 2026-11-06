@@ -1,5 +1,7 @@
 ## Fechamento do M1 — páginas e varredura
 
+> O código do M1 (`minidb_m1.py`, `minidb.py`) agora mora em [`src/`](../../src), sem cópia nesta pasta.
+
 Inseri 1200 registros do esquema `aluno` (id + matrícula, 8 bytes cada)
 usando `insere()`. Resultado:
 

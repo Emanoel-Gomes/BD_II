@@ -25,7 +25,7 @@ import shlex
 import sys
 from bisect import bisect_right
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
 from apoio import cria_tabela_m1  # noqa: E402
 from btree import ArvoreBMais, ChaveDuplicada, SemIndice  # noqa: E402
 from cache import CachePaginas  # noqa: E402

@@ -18,7 +18,8 @@ import tempfile
 import unittest
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, AQUI)
+RAIZ = os.path.join(AQUI, "..")
+sys.path.insert(0, os.path.join(RAIZ, "src"))
 
 from cache import CachePaginas                                    # noqa: E402
 from catalogo import Catalogo, EsquemaSQL, OFF_CATALOGO           # noqa: E402
@@ -28,7 +29,7 @@ from minidb import PAGE_SIZE, inicializa_pagina0                  # noqa: E402
 from sql import analisa, tokeniza                                 # noqa: E402
 
 CREATE_ALUNO = "CREATE TABLE aluno (id INT, matricula INT, nome CHAR(20));"
-PROGRAMA = os.path.join(AQUI, "minidb")
+PROGRAMA = os.path.join(RAIZ, "minidb")
 
 
 class ComBanco(unittest.TestCase):

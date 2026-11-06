@@ -27,7 +27,8 @@ import tempfile
 import unittest
 
 RAIZ = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, RAIZ)
+SRC = os.path.join(RAIZ, "..", "src")
+sys.path.insert(0, SRC)
 from apoio import cria_tabela_m1  # noqa: E402
 from btree import (  # noqa: E402
     CAP_FOLHA, CAP_INTERNO, FOLHA, INTERNO, ArvoreBMais, ChaveDuplicada, No, SemIndice,
@@ -519,7 +520,7 @@ class TestePersistencia(Base):
             "    a = ArvoreBMais.abre(CachePaginas(f, 3))\n"
             "    print(a.confere()[1], a.busca(42))\n"
         )
-        saida = subprocess.run([sys.executable, "-c", codigo, RAIZ, self.caminho],
+        saida = subprocess.run([sys.executable, "-c", codigo, SRC, self.caminho],
                                capture_output=True, text=True, check=True).stdout.split()
         self.assertEqual(saida[0], "59")
         self.assertEqual(saida[1:], ["(43,", "42)"])

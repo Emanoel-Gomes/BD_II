@@ -17,7 +17,7 @@ import random
 import sys
 import tempfile
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
 from apoio import cria_arquivo_de_paginas  # noqa: E402
 from cache import CachePaginas  # noqa: E402
 

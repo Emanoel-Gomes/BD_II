@@ -1,5 +1,7 @@
 # NOTES.md — M1: Página e arquivo de dados
 
+> O código do M1 (`minidb_m1.py`, `minidb.py`) agora mora em [`src/`](../../src), sem cópia nesta pasta.
+
 ## Onde o registro foi parar
 
 O registro gravado no slot 0 da página 2 (`id=1`, `matricula=20260001`) foi
