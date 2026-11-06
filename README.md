@@ -128,4 +128,3 @@ e cada `mN/` guarda os testes e as notas que provam aquele módulo. Os retratos 
 ## Discentes
 
 - **Emanoel Gomes** — [@Emanoel-Gomes](https://github.com/Emanoel-Gomes)
-- *(nome e matrícula do(a) parceiro(a) da dupla)*
