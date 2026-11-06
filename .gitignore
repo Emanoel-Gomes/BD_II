@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Arquivos de dados gerados pelos testes e demos (recriados ao rodar)
+*.db
+*.db-wal
+*.bin
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

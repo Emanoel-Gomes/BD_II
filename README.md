@@ -1,0 +1,121 @@
+# BD_II — minidb
+
+Projeto da disciplina de **Banco de Dados II** (ICEN/UFPA, 2026.4): construir, do zero e em Python, um
+SGBD pequeno — o **minidb** — que executa um `SELECT` com `WHERE` dentro de uma transação, e que volta
+ao ar consistente depois de um `kill -9` no meio do `COMMIT`.
+
+O projeto cresce em módulos ordenados. Cada módulo vive na sua pasta, com código, testes e um
+`NOTES.md` com as decisões de projeto e os números medidos.
+
+## Módulos
+
+| | Módulo | Tema | Pasta | Testes |
+|---|---|---|---|---|
+| ✅ | M1 | Página e arquivo de dados | [`m1/`](m1) | atividades (`kill.py`) |
+| ✅ | M2 | Cache de páginas (buffer pool, LRU, página suja) | [`m2/`](m2) | 32 |
+| ✅ | M3 | Árvore B+: busca, faixa e inserção | [`m3/`](m3) | 61 |
+| ✅ | M4 | Parser, catálogo e primeira consulta | [`m4/`](m4) | 94 |
+| ⬜ | M5 | Executor: `WHERE` por varredura sequencial e por índice | — | — |
+| ⬜ | M6 | Transações: `BEGIN`, `COMMIT`, `ROLLBACK` | — | — |
+| ⬜ | M7 | Recuperação: log de escrita antecipada (WAL) | — | — |
+| ⬜ | Tópico final | Um dos 10 tópicos de aprofundamento (ver abaixo) | — | — |
+
+### Tópico de aprofundamento da dupla
+
+> **A definir.** Opções: (1) executor e filtro · (2) transações · (3) recuperação/WAL ·
+> (4) `DELETE`/`UPDATE` com fusão e redistribuição na B+ · (5) junções (laço aninhado e hash) ·
+> (6) `ORDER BY` externo, `COUNT`/`SUM`/`GROUP BY` · (7) `VARCHAR` e nulos com diretório de slots ·
+> (8) concorrência, 2PL e deadlock · (9) otimizador por custo (`ANALYZE`, `EXPLAIN`) · (10) LSM-tree.
+
+## Arquitetura
+
+```
+ SQL (stdin) ─► tokeniza ─► Parser ─► confere (semântica) ─► executor
+                 sql.py      sql.py     executor.py          executor.py
+                                                                 │
+                              catálogo (catalogo.py) ◄───────────┤
+                                                                 ▼
+                          índice B+ (m3/btree.py) ─► cache de páginas (cache.py) ─► arquivo .db (M1)
+```
+
+- **M1** — páginas de 4096 bytes (cabeçalho de 16 bytes), registros de tamanho fixo, `fsync` na escrita.
+- **M2** — `CachePaginas`: `fixa`/`solta`, LRU, bit de sujeira, gravação na expulsão (*steal*/*no-force*).
+- **M3** — nó da B+ = uma página; divisão de folha, de nó interno e de raiz; busca em 3 páginas lidas
+  contra 70 da varredura numa tabela de 10 mil alunos.
+- **M4** — `CREATE TABLE`, `INSERT`, `SELECT`; um tipo de erro por etapa (léxico, sintático, semântico,
+  não implementado); catálogo persistido no arquivo.
+
+## Como rodar
+
+Requisito: Python 3.10+ (sem dependências externas).
+
+```bash
+git clone https://github.com/Emanoel-Gomes/BD_II.git
+cd BD_II
+make test          # roda os testes de M2, M3 e M4  (make m3, make m4, ... para um só)
+make clean         # apaga __pycache__ e arquivos .db gerados
+```
+
+### O minidb no terminal (M4)
+
+```bash
+cd m4
+./minidb dados.db
+CREATE TABLE aluno (id INT, matricula INT, nome CHAR(20));
+OK
+INSERT INTO aluno VALUES (1, 20260001, 'Ana');
+OK 1
+^D
+./minidb dados.db          # outro processo: lê do disco o que o primeiro criou
+SELECT * FROM aluno;
+1|20260001|Ana
+(1 linha)
+```
+
+Suportado hoje: `CREATE TABLE`, `INSERT`, `SELECT`. O `WHERE` já é analisado e conferido, mas só passa
+a ser executado no M5. Ainda não há `DELETE`, `UPDATE` nem `DROP`.
+
+### O índice B+ no terminal (M3)
+
+```bash
+cd m3
+python3 indice.py aluno.db                  # cria 10000 alunos com índice e abre o prompt
+python3 indice.py aluno.db busca 7500       # desce a árvore: 3 páginas lidas
+python3 indice.py aluno.db varre 7500       # mesma busca sem índice: 70 páginas lidas
+```
+
+Mais comandos em [`m2/comandos_testes`](m2/comandos_testes) e [`m3/comandos_testes`](m3/comandos_testes).
+
+## Estrutura do repositório
+
+```text
+.
+├── README.md
+├── Makefile
+├── .gitignore
+├── m1/                      # página e arquivo de dados
+│   ├── atividade_1/  atividade_2/  atividade_3/   # cada uma com NOTES.md
+├── m2/                      # cache de páginas
+│   ├── NOTES.md  cache.py  minidb_cache.py  apoio.py
+│   └── atividade_1/  atividade_2/  atividade_3/   # testes + medições
+├── m3/                      # árvore B+
+│   ├── NOTES.md  btree.py  minidb_indice.py  indice.py  teste_btree.py  ...
+├── m4/                      # parser, catálogo e executor
+│   ├── NOTES.md  sql.py  catalogo.py  executor.py  erros.py  minidb  teste_sql.py  ...
+└── m5/ ...                  # próximos módulos (o minidb final junta M2 + M3 + M4)
+```
+
+Cada pasta `mN/` é um retrato autocontido do módulo: traz a cópia do código que herda dos anteriores,
+para rodar sozinha. O `NOTES.md` do módulo registra o que mudou em relação ao anterior.
+
+## Convenções
+
+- Um `NOTES.md` por módulo (e por atividade, em M1 e M2) com decisões, números e o que o teste **não** prova.
+- Testes com `unittest`, usando cache de 3 frames para forçar a expulsão.
+- Arquivos `.db` e `__pycache__` não são versionados; os testes e demos recriam o que precisam.
+- Commits em português, no imperativo, um assunto por commit (ex.: `M4: executor do CREATE e do INSERT`).
+
+## Discentes
+
+- **Emanoel Gomes** — [@Emanoel-Gomes](https://github.com/Emanoel-Gomes)
+- *(nome e matrícula do(a) parceiro(a) da dupla)*
