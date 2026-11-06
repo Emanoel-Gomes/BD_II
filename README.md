@@ -20,30 +20,6 @@ O projeto cresce em módulos ordenados. Cada módulo vive na sua pasta, com cód
 | ⬜ | M7 | Recuperação: log de escrita antecipada (WAL) | — | — |
 | ⬜ | Tópico final | Um dos 10 tópicos de aprofundamento (ver abaixo) | — | — |
 
-### Tópico de aprofundamento da dupla
-
-> **A definir.** Opções: (1) executor e filtro · (2) transações · (3) recuperação/WAL ·
-> (4) `DELETE`/`UPDATE` com fusão e redistribuição na B+ · (5) junções (laço aninhado e hash) ·
-> (6) `ORDER BY` externo, `COUNT`/`SUM`/`GROUP BY` · (7) `VARCHAR` e nulos com diretório de slots ·
-> (8) concorrência, 2PL e deadlock · (9) otimizador por custo (`ANALYZE`, `EXPLAIN`) · (10) LSM-tree.
-
-## Arquitetura
-
-```
- SQL (stdin) ─► tokeniza ─► Parser ─► confere (semântica) ─► executor
-                 sql.py      sql.py     executor.py          executor.py
-                                                                 │
-                              catálogo (catalogo.py) ◄───────────┤
-                                                                 ▼
-                          índice B+ (m3/btree.py) ─► cache de páginas (cache.py) ─► arquivo .db (M1)
-```
-
-- **M1** — páginas de 4096 bytes (cabeçalho de 16 bytes), registros de tamanho fixo, `fsync` na escrita.
-- **M2** — `CachePaginas`: `fixa`/`solta`, LRU, bit de sujeira, gravação na expulsão (*steal*/*no-force*).
-- **M3** — nó da B+ = uma página; divisão de folha, de nó interno e de raiz; busca em 3 páginas lidas
-  contra 70 da varredura numa tabela de 10 mil alunos.
-- **M4** — `CREATE TABLE`, `INSERT`, `SELECT`; um tipo de erro por etapa (léxico, sintático, semântico,
-  não implementado); catálogo persistido no arquivo.
 
 ## Como rodar
 
